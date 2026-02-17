@@ -117,12 +117,14 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
                                     key={type}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, type })}
-                                    className={`flex-1 py-3 px-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${formData.type === type
+                                    className={`flex-1 py-2.5 px-1 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all ${formData.type === type
                                         ? 'bg-white dark:bg-brand text-brand dark:text-white shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-amber-500'
                                         }`}
                                 >
-                                    {type === 'EMERGENCIA' ? '🚨 Emer.' : type === 'AHORRO' ? '💰 Ahorro' : type}
+                                    <span className="flex items-center justify-center gap-1.5 w-full">
+                                        {type === 'EMERGENCIA' ? <><span className="text-sm">🚨</span> Emer.</> : type === 'AHORRO' ? <><span className="text-sm">💰</span> Ahorro</> : type}
+                                    </span>
                                 </button>
                             ))}
                         </div>
@@ -149,15 +151,15 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
 
                             {/* Fecha */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 dark:text-indigo-400 uppercase tracking-widest ml-1">Fecha</label>
+                                <label className="text-[10px] font-black text-slate-400 dark:text-brand uppercase tracking-widest ml-1">Fecha</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Calendar className="w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                                        <Calendar className="w-5 h-5 text-slate-400 group-focus-within:text-brand transition-colors" />
                                     </div>
                                     <input
                                         type="date"
                                         required
-                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none"
+                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none"
                                         value={formData.date}
                                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                     />
@@ -167,13 +169,13 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
 
                         {/* Categoría */}
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-indigo-400 uppercase tracking-widest ml-1">Categoría</label>
+                            <label className="text-[10px] font-black text-slate-400 dark:text-brand uppercase tracking-widest ml-1">Categoría</label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Tag className="w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                                    <Tag className="w-5 h-5 text-slate-400 group-focus-within:text-brand transition-colors" />
                                 </div>
                                 <select
-                                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none appearance-none"
+                                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none appearance-none"
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                 >
@@ -186,14 +188,14 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
 
                         {/* Descripción */}
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-indigo-400 uppercase tracking-widest ml-1">Descripción / Detalle</label>
+                            <label className="text-[10px] font-black text-slate-400 dark:text-brand uppercase tracking-widest ml-1">Descripción / Detalle</label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Type className="w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                                    <Type className="w-5 h-5 text-slate-400 group-focus-within:text-brand transition-colors" />
                                 </div>
                                 <input
                                     type="text"
-                                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold text-sm placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none"
+                                    className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none"
                                     placeholder="Ejem: Supermercado Coto, Ferretería El Clavo..."
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -204,13 +206,13 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
                         {/* Método de Pago */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 dark:text-indigo-400 uppercase tracking-widest ml-1">Método de Pago</label>
+                                <label className="text-[10px] font-black text-slate-400 dark:text-brand uppercase tracking-widest ml-1">Método de Pago</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <CreditCard className="w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                                        <CreditCard className="w-5 h-5 text-slate-400 group-focus-within:text-brand transition-colors" />
                                     </div>
                                     <select
-                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none appearance-none"
+                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none appearance-none"
                                         value={formData.payment_method}
                                         onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
                                     >
@@ -222,7 +224,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 dark:text-indigo-400 uppercase tracking-widest ml-1">Estado</label>
+                                <label className="text-[10px] font-black text-slate-400 dark:text-brand uppercase tracking-widest ml-1">Estado</label>
                                 <button
                                     type="button"
                                     onClick={() => setFormData({ ...formData, status: formData.status === 'CONFIRMED' ? 'PENDING' : 'CONFIRMED' })}
@@ -250,10 +252,10 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
                                 <label className="text-[10px] font-black text-slate-400 dark:text-brand uppercase tracking-widest ml-1">Plan de Cuotas</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <History className="w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+                                        <History className="w-5 h-5 text-slate-400 group-focus-within:text-brand transition-colors" />
                                     </div>
                                     <select
-                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl text-slate-900 dark:text-white font-bold text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none appearance-none"
+                                        className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none appearance-none"
                                         value={formData.total_installments}
                                         onChange={(e) => setFormData({ ...formData, total_installments: parseInt(e.target.value) })}
                                     >
