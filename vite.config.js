@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'logo-casa_192.png', 'logo-casa_512.png'],
+      includeAssets: ['favicon.ico', 'home_192.png', 'home_512.png'],
       manifest: {
         name: 'Casa Contable',
         short_name: 'CasaContable',
@@ -21,17 +21,17 @@ export default defineConfig({
         start_url: '/casa-contable/',
         icons: [
           {
-            src: 'logo-casa_192.png',
+            src: 'home_192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'logo-casa_512.png',
+            src: 'home_512.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'logo-casa_512.png',
+            src: 'home_512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
