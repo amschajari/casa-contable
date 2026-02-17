@@ -9,25 +9,29 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.ico', 'logo-casa_192.png', 'logo-casa_512.png'],
       manifest: {
         name: 'Casa Contable',
         short_name: 'CasaContable',
         description: 'Gestión de gastos e ingresos domésticos',
-        theme_color: '#ffffff',
+        theme_color: '#4da7a7',
+        background_color: '#e0d8cc',
+        display: 'standalone',
+        scope: '/casa-contable/',
+        start_url: '/casa-contable/',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'logo-casa_192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'logo-casa_512.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'logo-casa_512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
