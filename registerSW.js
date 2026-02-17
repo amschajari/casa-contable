@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/casa-contable/sw.js', { scope: '/casa-contable/' })})}
