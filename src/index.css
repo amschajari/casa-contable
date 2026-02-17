@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    /* slate-50 */
+    --foreground: 222 47% 11%;
+    /* slate-950 */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --border: 214 32% 91%;
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    /* slate-950 */
+    --foreground: 210 40% 98%;
+    /* slate-50 */
+    --card: 217 33% 17%;
+    /* slate-800 approx */
+    --card-foreground: 210 40% 98%;
+    --border: 217 33% 25%;
+  }
+}
+
+body {
+  @apply bg-slate-50 text-slate-950 transition-colors duration-300;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.dark body {
+  @apply bg-[#0f172a] text-slate-50;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Utilities */
+.premium-card {
+  @apply bg-white border border-slate-100 shadow-xl rounded-[2.5rem] transition-all;
+}
+
+.dark .premium-card {
+  @apply bg-[#1e293b] border-white/5 shadow-2xl;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
