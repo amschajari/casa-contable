@@ -195,14 +195,14 @@ const Movements = () => {
                         {filteredMovements.map((mov) => {
                             const config = getTypeConfig(mov.type);
                             return (
-                                <div key={mov.id} className={`bg-white dark:bg-slate-900 rounded-3xl shadow-xl border p-6 relative overflow-hidden group transition-all ${mov.status === 'PENDING' ? 'border-dashed border-amber-300 dark:border-amber-500/30' : 'border-slate-100 dark:border-white/5'}`}>
+                                <div key={mov.id} className={`bg-white dark:bg-slate-50 rounded-3xl shadow-xl border p-6 relative overflow-hidden group transition-all ${mov.status === 'PENDING' ? 'border-dashed border-amber-300 dark:border-amber-500/30' : 'border-slate-100 dark:border-slate-200'}`}>
                                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                         <History className="w-12 h-12" />
                                     </div>
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
                                             <div className="flex items-center gap-3">
-                                                <h3 className="font-black text-slate-900 dark:text-white text-xl italic tracking-tighter leading-tight">{mov.description || 'Sin descripción'}</h3>
+                                                <h3 className="font-black text-slate-900 text-xl italic tracking-tighter leading-tight">{mov.description || 'Sin descripción'}</h3>
                                                 <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '394e77da-5211-4475-8025-456637841c8d'
                                                     ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
                                                     : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
@@ -210,12 +210,12 @@ const Movements = () => {
                                                     {mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'S' : 'A'}
                                                 </div>
                                                 {mov.total_installments > 1 && (
-                                                    <span className="bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[8px] font-black px-2 py-1 rounded-full">
+                                                    <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-tighter">
                                                         {mov.installment_number}/{mov.total_installments}
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-[10px] text-slate-500 dark:text-slate-600 font-black uppercase tracking-widest mt-1 italic flex items-center gap-2">
+                                            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1 italic flex items-center gap-2">
                                                 <Calendar className="w-3 h-3 opacity-70" /> {formatDate(mov.date)}
                                             </p>
                                         </div>
@@ -248,7 +248,7 @@ const Movements = () => {
                                                 <CheckCircle className="w-4 h-4" /> Confirmar
                                             </button>
                                         ) : (
-                                            <span className="text-[10px] text-slate-500 dark:text-slate-600 font-bold italic bg-slate-100 dark:bg-slate-200/50 px-3 py-1 rounded-lg tabular-nums">{mov.payment_method}</span>
+                                            <span className="text-[10px] text-slate-500 font-bold italic bg-slate-100 dark:bg-slate-200 px-3 py-1 rounded-lg tabular-nums">{mov.payment_method}</span>
                                         )}
                                     </div>
                                 </div>

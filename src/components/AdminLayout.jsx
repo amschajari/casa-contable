@@ -97,7 +97,7 @@ const AdminLayout = ({ children }) => {
             </nav>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col pt-4">
+            <main className="flex-1 flex flex-col pt-4 pb-32 md:pb-8">
                 {children}
             </main>
 

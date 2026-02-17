@@ -16,8 +16,8 @@
   }
 
   .dark {
-    --bg-main: #404040;
-    /* Lightened Neutral Gray */
+    --bg-main: #1e293b;
+    /* Lighter Blue-Slate / Premium Dark */
     --bg-card: #f8fafc;
     --text-main: #f1f5f9;
     --text-card: #0f172a;

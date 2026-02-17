@@ -87,14 +87,14 @@ const SummaryCards = () => {
             title: 'Emergencia',
             value: summary.totalEmergency || 0,
             icon: <AlertCircle className="w-8 h-8 text-amber-500" />,
-            label: 'Fondo 🚨',
+            label: <span>Fondo <span className="text-base ml-1">🚨</span></span>,
             color: 'amber'
         },
         {
             title: 'Ahorro',
             value: summary.totalSavings || 0,
             icon: <Wallet className="w-8 h-8 text-brand" />,
-            label: 'Metas 💰',
+            label: <span>Metas <span className="text-base ml-1">💰</span></span>,
             color: 'brand'
         },
         {
@@ -318,6 +318,108 @@ const Dashboard = () => {
                                 Los consumos no afectan el balance directo pero ayudan a trackear el uso de recursos.
                             </p>
                         </div>
+                    </div>
+
+                    <PersonalSummary />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const PersonalSummary = () => {
+    const [stats, setStats] = useState({
+        ale: { income: 0, expenses: 0 },
+        silvi: { income: 0, expenses: 0 }
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const data = await movementsService.getAll();
+                const silviId = '394e77da-5211-4475-8025-456637841c8d';
+
+                const newStats = data.reduce((acc, m) => {
+                    if (m.status !== 'CONFIRMED') return acc;
+
+                    const isSilvi = m.user_id === silviId;
+                    const target = isSilvi ? acc.silvi : acc.ale;
+
+                    if (m.type === 'INGRESO') target.income += Number(m.amount);
+                    if (m.type === 'GASTO' || m.type === 'EMERGENCIA' || m.type === 'AHORRO') target.expenses += Number(m.amount);
+
+                    return acc;
+                }, {
+                    ale: { income: 0, expenses: 0 },
+                    silvi: { income: 0, expenses: 0 }
+                });
+
+                setStats(newStats);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            maximumFractionDigits: 0
+        }).format(amount);
+    };
+
+    if (loading) return (
+        <div className="animate-pulse space-y-4">
+            <div className="h-32 bg-slate-100 rounded-2xl"></div>
+            <div className="h-32 bg-slate-100 rounded-2xl"></div>
+        </div>
+    );
+
+    return (
+        <div className="space-y-4">
+            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 ml-1">Resumen Personal</h4>
+
+            {/* ALE */}
+            <div className="bg-white dark:bg-slate-100 border border-slate-100 dark:border-slate-300 p-6 rounded-2xl shadow-sm group hover:border-brand/40 transition-colors">
+                <div className="flex justify-between items-center mb-5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-black text-xs shadow-lg shadow-brand/20">A</div>
+                        <p className="text-xs font-black uppercase tracking-widest text-slate-900">ALE</p>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                    <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ingresos</p>
+                        <p className="text-xl font-black text-emerald-600 italic tracking-tighter leading-none">{formatCurrency(stats.ale.income)}</p>
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Salidas</p>
+                        <p className="text-xl font-black text-rose-600 italic tracking-tighter leading-none">{formatCurrency(stats.ale.expenses)}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* SILVI */}
+            <div className="bg-white dark:bg-slate-100 border border-slate-100 dark:border-slate-300 p-6 rounded-2xl shadow-sm group hover:border-pink-300/40 transition-colors">
+                <div className="flex justify-between items-center mb-5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-black text-xs shadow-lg shadow-pink-500/20">S</div>
+                        <p className="text-xs font-black uppercase tracking-widest text-slate-900">SILVI</p>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                    <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ingresos</p>
+                        <p className="text-xl font-black text-emerald-600 italic tracking-tighter leading-none">{formatCurrency(stats.silvi.income)}</p>
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Salidas</p>
+                        <p className="text-xl font-black text-rose-600 italic tracking-tighter leading-none">{formatCurrency(stats.silvi.expenses)}</p>
                     </div>
                 </div>
             </div>
