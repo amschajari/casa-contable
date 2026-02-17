@@ -93,9 +93,9 @@ const SummaryCards = () => {
         {
             title: 'Ahorro',
             value: summary.totalSavings || 0,
-            icon: <Wallet className="w-8 h-8 text-indigo-500" />,
+            icon: <Wallet className="w-8 h-8 text-brand" />,
             label: 'Metas 💰',
-            color: 'indigo'
+            color: 'brand'
         },
         {
             title: 'Balance',
@@ -121,15 +121,15 @@ const SummaryCards = () => {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             {cards.map((card, index) => (
-                <div key={index} className="bg-white dark:bg-white/5 p-8 rounded-[2rem] shadow-xl border border-slate-100 dark:border-white/5 flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all hover:-translate-y-1">
+                <div key={index} className="premium-card p-8 flex items-center justify-between group hover:border-brand/50 transition-all hover:-translate-y-1">
                     <div>
-                        <p className="text-slate-400 dark:text-gray-500 text-[10px] uppercase tracking-[0.2rem] font-black mb-2 opacity-80">{card.label}</p>
-                        <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter italic">
+                        <p className="text-slate-400 dark:text-slate-500 text-[10px] uppercase tracking-[0.2rem] font-black mb-2 opacity-80">{card.label}</p>
+                        <p className="text-3xl font-black text-slate-900 dark:text-slate-800 tracking-tighter italic">
                             {formatCurrency(card.value)}
                         </p>
-                        <p className="text-slate-500 dark:text-gray-400 text-[10px] font-black mt-2 uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">{card.title}</p>
+                        <p className="text-slate-500 dark:text-slate-600 text-[10px] font-black mt-2 uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">{card.title}</p>
                     </div>
-                    <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group-hover:scale-110 transition-transform shadow-inner">
+                    <div className="p-4 bg-slate-50 dark:bg-slate-200/50 rounded-2xl group-hover:scale-110 transition-transform shadow-inner border border-transparent dark:border-slate-300/50">
                         {card.icon}
                     </div>
                 </div>
@@ -165,15 +165,15 @@ const RecentMovements = () => {
     };
 
     return (
-        <div className="bg-white dark:bg-white/5 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-white/5 overflow-hidden flex flex-col">
-            <div className="p-8 bg-slate-50/50 dark:bg-white/5 border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
+        <div className="premium-card overflow-hidden flex flex-col">
+            <div className="p-8 bg-slate-50/50 dark:bg-slate-50 border-b border-slate-100 dark:border-slate-200 flex justify-between items-center">
                 <div>
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white italic tracking-tighter">Últimos Movimientos</h3>
-                    <p className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-[0.2rem] mt-1">Actividad Reciente</p>
+                    <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter">Últimos Movimientos</h3>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-black tracking-[0.2rem] mt-1">Actividad Reciente</p>
                 </div>
                 <Link
                     to="/admin/movements"
-                    className="bg-indigo-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 transition-all active:scale-95 flex items-center gap-2"
+                    className="bg-brand text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-dark shadow-lg shadow-brand/20 transition-all active:scale-95 flex items-center gap-2"
                 >
                     Ver Todo <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -189,31 +189,58 @@ const RecentMovements = () => {
                 ) : (
                     <div className="space-y-4">
                         {movements.map((mov) => (
-                            <div key={mov.id} className="flex justify-between items-center p-4 px-6 bg-slate-50 dark:bg-white/5 rounded-[1.5rem] border border-transparent hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:bg-white dark:hover:bg-indigo-500/5 transition-all group">
+                            <div key={mov.id} className={`flex justify-between items-center p-4 px-6 bg-slate-50 dark:bg-slate-100 rounded-[1.5rem] border transition-all group ${mov.status === 'PENDING'
+                                ? 'border-dashed border-amber-300 dark:border-amber-400/50 opacity-80'
+                                : 'border-transparent hover:border-brand/30 dark:hover:border-brand/40'
+                                }`}>
                                 <div className="flex items-center gap-5">
                                     <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black ${mov.type === 'INGRESO' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
-                                            mov.type === 'GASTO' ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400' :
-                                                mov.type === 'EMERGENCIA' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' :
-                                                    mov.type === 'AHORRO' ? 'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' :
-                                                        'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400'
+                                        mov.type === 'GASTO' ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400' :
+                                            mov.type === 'EMERGENCIA' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                                                mov.type === 'AHORRO' ? 'bg-brand-100 dark:bg-brand-200 text-brand dark:text-brand-dark' :
+                                                    'bg-slate-100 dark:bg-slate-200 text-slate-600 dark:text-slate-700'
                                         } shadow-inner`}>
-                                        {mov.type === 'INGRESO' ? '+' : mov.type === 'GASTO' ? '-' : mov.type === 'EMERGENCIA' ? '!' : '*'}
+                                        {mov.status === 'PENDING' ? <Clock className="w-5 h-5 text-amber-500" /> : (mov.status === 'CONFIRMED' && mov.type === 'INGRESO' ? '+' : mov.status === 'CONFIRMED' && mov.type === 'GASTO' ? '-' : (mov.type === 'EMERGENCIA' ? '!' : '*'))}
                                     </div>
                                     <div>
-                                        <p className="font-black text-slate-800 dark:text-white italic text-lg tracking-tight leading-none mb-1">{mov.description || 'Sin descripción'}</p>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <p className="font-black text-slate-800 italic text-lg tracking-tight leading-none">{mov.description || 'Sin descripción'}</p>
+                                            <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-md border ${mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50' : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
+                                                }`}>
+                                                {mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'SILVI' : 'ALE'}
+                                            </span>
+                                            {mov.total_installments > 1 && (
+                                                <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-tighter">
+                                                    {mov.installment_number}/{mov.total_installments}
+                                                </span>
+                                            )}
+                                        </div>
                                         <p className="text-[10px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.2rem]">{mov.date}</p>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className={`text-xl font-black tracking-tighter italic ${mov.type === 'INGRESO' ? 'text-emerald-600 dark:text-emerald-400' :
-                                        mov.type === 'GASTO' ? 'text-rose-600 dark:text-rose-400' :
-                                            mov.type === 'EMERGENCIA' ? 'text-amber-600 dark:text-amber-400' :
-                                                mov.type === 'AHORRO' ? 'text-indigo-600 dark:text-indigo-400' :
-                                                    'text-slate-600 dark:text-slate-400'
-                                        }`}>
-                                        {formatCurrency(mov.amount)}
-                                    </p>
-                                    <p className="text-[10px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.1rem] opacity-60">{mov.category}</p>
+                                <div className="flex items-center gap-4">
+                                    <div className="text-right">
+                                        <p className={`text-xl font-black tracking-tighter italic ${mov.type === 'INGRESO' ? 'text-emerald-600 dark:text-emerald-400' :
+                                            mov.type === 'GASTO' ? 'text-rose-600 dark:text-rose-400' :
+                                                mov.type === 'EMERGENCIA' ? 'text-amber-600 dark:text-amber-400' :
+                                                    mov.type === 'AHORRO' ? 'text-brand' :
+                                                        'text-slate-600 dark:text-slate-400'
+                                            }`}>
+                                            {formatCurrency(mov.amount)}
+                                        </p>
+                                        <p className="text-[10px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.1rem] opacity-60">{mov.category}</p>
+                                    </div>
+                                    {mov.status === 'PENDING' && (
+                                        <button
+                                            onClick={async () => {
+                                                await confirmMovement(mov.id);
+                                                window.location.reload();
+                                            }}
+                                            className="p-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+                                        >
+                                            <CheckCircle className="w-5 h-5" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -236,18 +263,18 @@ const Dashboard = () => {
                     <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter italic leading-none">
                         Dashboard
                     </h1>
-                    <div className="h-2 w-24 bg-indigo-600/20 dark:bg-indigo-600/40 rounded-full mt-2"></div>
+                    <div className="h-2 w-24 bg-brand mt-2 rounded-full"></div>
                 </div>
 
-                <div className="flex items-center gap-3 bg-white dark:bg-white/5 p-2 px-4 rounded-xl shadow-sm border border-slate-100 dark:border-white/5">
-                    <Clock className="w-4 h-4 text-indigo-500" />
+                <div className="flex items-center gap-3 bg-white dark:bg-slate-100 p-2 px-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-300 transition-colors">
+                    <Clock className="w-4 h-4 text-brand" />
                     <select
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="text-xs font-black uppercase text-slate-600 dark:text-slate-400 focus:outline-none bg-transparent cursor-pointer"
+                        className="text-xs font-black uppercase text-slate-900 focus:outline-none bg-transparent cursor-pointer"
                     >
                         {[2024, 2025, 2026].map(year => (
-                            <option key={year} value={year} className="dark:bg-slate-800">{year}</option>
+                            <option key={year} value={year} className="dark:bg-white">{year}</option>
                         ))}
                     </select>
                 </div>
@@ -258,7 +285,7 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
                     {chartLoading ? (
-                        <div className="h-[400px] bg-gray-100 rounded-2xl animate-pulse"></div>
+                        <div className="h-[450px] bg-slate-100 dark:bg-slate-900 rounded-[2.5rem] animate-pulse h-[450px]"></div>
                     ) : (
                         <BarChartView monthlyData={monthlyData} />
                     )}
@@ -266,26 +293,26 @@ const Dashboard = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 p-8 rounded-2xl shadow-2xl text-white relative overflow-hidden group">
+                    <div className="bg-brand p-8 rounded-2xl shadow-2xl text-white relative overflow-hidden group">
                         <div className="absolute -top-10 -right-10 text-9xl opacity-10 rotate-12 group-hover:rotate-0 transition-all duration-500">🏠</div>
-                        <h4 className="text-xs font-black uppercase tracking-[0.3em] text-indigo-300 mb-4 flex items-center gap-2">
+                        <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/70 mb-4 flex items-center gap-2">
                             <AlertCircle className="w-3 h-3" /> Estado del Hogar
                         </h4>
                         <p className="text-xl font-black italic tracking-tight leading-snug">Control Total</p>
-                        <p className="text-sm text-indigo-100/80 mt-4 leading-relaxed">
+                        <p className="text-sm text-white/90 mt-4 leading-relaxed">
                             Recuerda registrar cada gasto para mantener un balance preciso del hogar.
                         </p>
                         <div className="mt-8 flex items-center gap-2">
                             <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Sincronizado con Supabase</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/80">Sincronizado con Supabase</span>
                         </div>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-6 rounded-2xl flex gap-4">
-                        <Info className="w-6 h-6 text-indigo-500 shrink-0" />
+                    <div className="bg-slate-50 dark:bg-slate-100 border border-slate-100 dark:border-slate-300 p-6 rounded-2xl flex gap-4 transition-colors">
+                        <Info className="w-6 h-6 text-brand shrink-0" />
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-1">Dato Útil</p>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-1">Dato Útil</p>
+                            <p className="text-xs text-slate-800 dark:text-slate-900 font-medium leading-relaxed">
                                 Los consumos no afectan el balance directo pero ayudan a trackear el uso de recursos.
                             </p>
                         </div>

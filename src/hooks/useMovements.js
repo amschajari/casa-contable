@@ -31,11 +31,23 @@ export const useMovements = () => {
         }
     };
 
+    const confirmMovement = async (id) => {
+        try {
+            const updated = await movementsService.confirm(id);
+            setMovements(prev => prev.map(m => m.id === id ? updated : m));
+            return updated;
+        } catch (err) {
+            console.error('Error confirming movement:', err);
+            throw err;
+        }
+    };
+
     return {
         movements,
         loading,
         error,
         fetchMovements,
-        addMovement
+        addMovement,
+        confirmMovement
     };
 };

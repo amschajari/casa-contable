@@ -4,50 +4,38 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    /* slate-50 */
-    --foreground: 222 47% 11%;
-    /* slate-950 */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --border: 214 32% 91%;
+    --bg-main: #e0d8cc;
+    /* Soft Earth / Clay */
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-card: #0f172a;
+    --border-main: #f1f5f9;
+    --brand-primary: #4da7a7;
+    /* Clicando Turquoise */
+    --brand-dark: #3a8282;
   }
 
   .dark {
-    --background: 222 47% 11%;
-    /* slate-950 */
-    --foreground: 210 40% 98%;
-    /* slate-50 */
-    --card: 217 33% 17%;
-    /* slate-800 approx */
-    --card-foreground: 210 40% 98%;
-    --border: 217 33% 25%;
+    --bg-main: #404040;
+    /* Lightened Neutral Gray */
+    --bg-card: #f8fafc;
+    --text-main: #f1f5f9;
+    --text-card: #0f172a;
+    --border-main: rgba(255, 255, 255, 0.1);
   }
 }
 
 body {
-  @apply bg-slate-50 text-slate-950 transition-colors duration-300;
-  margin: 0;
-  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.dark body {
-  @apply bg-[#0f172a] text-slate-50;
-}
-
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Custom Utilities */
 .premium-card {
-  @apply bg-white border border-slate-100 shadow-xl rounded-[2.5rem] transition-all;
-}
-
-.dark .premium-card {
-  @apply bg-[#1e293b] border-white/5 shadow-2xl;
+  background-color: var(--bg-card);
+  color: var(--text-card);
+  border: 1px solid var(--border-main);
+  @apply shadow-xl rounded-[2.5rem] transition-all;
 }
 
 .hide-scrollbar::-webkit-scrollbar {

@@ -12,6 +12,33 @@ export const movementsService = {
     },
 
     async create(movement) {
+        if (movement.total_installments > 1) {
+            const groupId = crypto.randomUUID();
+            const movements = [];
+            const baseDate = new Date(movement.date);
+
+            for (let i = 1; i <= movement.total_installments; i++) {
+                const installmentDate = new Date(baseDate);
+                installmentDate.setMonth(baseDate.getMonth() + (i - 1));
+
+                movements.push({
+                    ...movement,
+                    date: installmentDate.toISOString().split('T')[0],
+                    installment_number: i,
+                    group_id: groupId,
+                    status: i === 1 ? 'CONFIRMED' : 'PENDING' // La primera se confirma, el resto pendientes
+                });
+            }
+
+            const { data, error } = await supabase
+                .from('movements')
+                .insert(movements)
+                .select();
+
+            if (error) throw error;
+            return data[0];
+        }
+
         const { data, error } = await supabase
             .from('movements')
             .insert([movement])
@@ -21,10 +48,10 @@ export const movementsService = {
         return data[0];
     },
 
-    async update(id, updates) {
+    async confirm(id) {
         const { data, error } = await supabase
             .from('movements')
-            .update(updates)
+            .update({ status: 'CONFIRMED' })
             .eq('id', id)
             .select();
 
@@ -45,7 +72,8 @@ export const movementsService = {
     async getSummary() {
         const { data, error } = await supabase
             .from('movements')
-            .select('type, amount');
+            .select('type, amount, status')
+            .eq('status', 'CONFIRMED');
 
         if (error) throw error;
 

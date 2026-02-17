@@ -14,12 +14,12 @@ const BarChartView = ({ monthlyData }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-white/5 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-white/5 p-8 h-[450px] transition-colors">
+        <div className="premium-card p-8 h-[500px] transition-colors">
             <div className="mb-6">
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white italic tracking-tighter leading-none">📊 Gráfico Anual</h3>
-                <p className="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-black tracking-[0.25rem] mt-2">Ingresos Netos por Mes</p>
+                <h3 className="text-2xl font-black text-slate-900 dark:text-slate-800 italic tracking-tighter leading-none">📊 Gráfico Anual</h3>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-black tracking-[0.25rem] mt-2">Ingresos Netos por Mes</p>
             </div>
-            <div className="h-[320px] w-full">
+            <div className="h-[370px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid
@@ -31,7 +31,7 @@ const BarChartView = ({ monthlyData }) => {
                             dataKey="shortMonth"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: isDarkMode ? '#64748b' : '#94a3b8', fontSize: 10, fontBold: 900 }}
+                            tick={{ fill: isDarkMode ? '#404040' : '#475569', fontSize: 13, fontBold: 900 }}
                             dy={15}
                         />
                         <Tooltip
@@ -60,7 +60,7 @@ const BarChartView = ({ monthlyData }) => {
                             {monthlyData.map((entry, index) => (
                                 <Cell
                                     key={`cell-${index}`}
-                                    fill={entry.total >= 0 ? (isDarkMode ? '#6366f1' : '#4f46e5') : (isDarkMode ? '#f43f5e' : '#e11d48')}
+                                    fill={entry.total >= 0 ? '#4da7a7' : (isDarkMode ? '#f43f5e' : '#e11d48')}
                                     fillOpacity={entry.total === 0 ? 0.1 : 1}
                                 />
                             ))}

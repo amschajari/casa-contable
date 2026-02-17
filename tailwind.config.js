@@ -4,8 +4,18 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    darkMode: 'selector',
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                main: 'var(--bg-main)',
+                card: 'var(--bg-card)',
+                brand: {
+                    DEFAULT: 'var(--brand-primary)',
+                    dark: 'var(--brand-dark)',
+                }
+            }
+        },
     },
     plugins: [],
 }

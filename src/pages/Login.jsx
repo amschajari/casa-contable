@@ -31,7 +31,7 @@ const Login = () => {
                 icon: 'error',
                 title: 'Error de acceso',
                 text: error.message || 'Credenciales inválidas',
-                confirmButtonColor: '#4f46e5'
+                confirmButtonColor: '#4da7a7'
             });
         } finally {
             setLoading(false);
@@ -43,7 +43,7 @@ const Login = () => {
             <div className="max-w-md w-full">
                 {/* Logo / Header */}
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-indigo-600 rounded-3xl shadow-2xl shadow-indigo-500/20 mb-6 rotate-12 hover:rotate-0 transition-transform duration-500">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-brand rounded-3xl shadow-2xl shadow-brand/20 mb-6 rotate-12 hover:rotate-0 transition-transform duration-500">
                         <LogIn className="w-10 h-10 text-white" />
                     </div>
                     <h1 className="text-4xl font-black text-white italic tracking-tighter mb-2">Casa Contable</h1>
@@ -52,14 +52,14 @@ const Login = () => {
 
                 {/* Card */}
                 <div className="bg-[#1e293b] rounded-[2.5rem] shadow-2xl border border-white/5 p-8 md:p-10 backdrop-blur-xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-indigo-500/20 transition-colors"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-brand/20 transition-colors"></div>
 
                     <form onSubmit={handleSubmit} className="space-y-6 relative">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-1">Email Maestro</label>
+                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-1">Email Maestro</label>
                             <div className="relative group/input">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Mail className="w-5 h-5 text-gray-500 group-focus-within/input:text-indigo-400 transition-colors" />
+                                    <Mail className="w-5 h-5 text-gray-500 group-focus-within/input:text-brand transition-colors" />
                                 </div>
                                 <input
                                     type="email"
@@ -73,10 +73,10 @@ const Login = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-1">Password Especial</label>
+                            <label className="text-[10px] font-black text-brand uppercase tracking-widest ml-1">Password Especial</label>
                             <div className="relative group/input">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Lock className="w-5 h-5 text-gray-500 group-focus-within/input:text-indigo-400 transition-colors" />
+                                    <Lock className="w-5 h-5 text-gray-500 group-focus-within/input:text-brand transition-colors" />
                                 </div>
                                 <input
                                     type="password"
@@ -92,7 +92,7 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-5 rounded-2xl font-black italic tracking-tight text-lg shadow-xl shadow-indigo-600/20 transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3 mt-4"
+                            className="w-full bg-brand hover:bg-brand-dark text-white py-5 rounded-2xl font-black italic tracking-tight text-lg shadow-xl shadow-brand/20 transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:translate-y-0 flex items-center justify-center gap-3 mt-4"
                         >
                             {loading ? (
                                 <>
