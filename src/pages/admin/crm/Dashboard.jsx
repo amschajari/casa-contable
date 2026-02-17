@@ -205,10 +205,12 @@ const RecentMovements = () => {
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <p className="font-black text-slate-800 italic text-lg tracking-tight leading-none">{mov.description || 'Sin descripción'}</p>
-                                            <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-md border ${mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50' : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
+                                            <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '394e77da-5211-4475-8025-456637841c8d'
+                                                ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
+                                                : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
                                                 }`}>
-                                                {mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'SILVI' : 'ALE'}
-                                            </span>
+                                                {mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'S' : 'A'}
+                                            </div>
                                             {mov.total_installments > 1 && (
                                                 <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-tighter">
                                                     {mov.installment_number}/{mov.total_installments}
