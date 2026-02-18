@@ -237,9 +237,6 @@ const Movements = () => {
                             const config = getTypeConfig(mov.type);
                             return (
                                 <div key={mov.id} className={`bg-white dark:bg-slate-50 rounded-3xl shadow-xl border p-6 relative overflow-hidden group transition-all ${mov.status === 'PENDING' ? 'border-dashed border-amber-300 dark:border-amber-500/30' : 'border-slate-100 dark:border-slate-200'}`}>
-                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <History className="w-12 h-12" />
-                                    </div>
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
                                             <div className="flex items-center gap-3">
