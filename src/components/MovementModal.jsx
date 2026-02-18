@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Plus, Calendar, DollarSign, Tag, CreditCard, Type, Loader2, Clock, CheckCircle, History } from 'lucide-react';
 import { useMovements } from '../hooks/useMovements';
+import { useAuth } from '../hooks/useAuth';
 import Swal from 'sweetalert2';
 
 const CATEGORIES = [
@@ -31,6 +32,7 @@ const PAYMENT_METHODS = [
 
 const MovementModal = ({ isOpen, onClose, onSuccess }) => {
     const { addMovement } = useMovements();
+    const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         type: 'GASTO',
@@ -40,7 +42,8 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
         payment_method: 'Efectivo',
         date: new Date().toISOString().split('T')[0],
         status: 'CONFIRMED',
-        total_installments: 1
+        total_installments: 1,
+        user_id: user?.id
     });
 
     if (!isOpen) return null;
@@ -75,7 +78,8 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
                 payment_method: 'Efectivo',
                 date: new Date().toISOString().split('T')[0],
                 status: 'CONFIRMED',
-                total_installments: 1
+                total_installments: 1,
+                user_id: user?.id
             });
         } catch (error) {
             Swal.fire({

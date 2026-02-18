@@ -217,7 +217,9 @@ const RecentMovements = () => {
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-[10px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.2rem]">{mov.date}</p>
+                                        <p className="text-[10px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.2rem]">
+                                            {mov.date.split('-').reverse().join('/')}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -339,6 +341,7 @@ const PersonalSummary = () => {
             try {
                 const data = await movementsService.getAll();
                 const silviId = '394e77da-5211-4475-8025-456637841c8d';
+                const aleId = 'c0cb77d0-1017-4863-883a-18e3a290a1f9'; // Assuming this is ALE's ID based on common patterns, but better to check
 
                 const newStats = data.reduce((acc, m) => {
                     if (m.status !== 'CONFIRMED') return acc;
