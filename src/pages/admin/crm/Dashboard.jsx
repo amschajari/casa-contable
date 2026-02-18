@@ -225,7 +225,7 @@ const RecentMovements = () => {
                                             )}
                                         </div>
                                         <p className="text-[10px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.2rem]">
-                                            {mov.date.split('-').reverse().join('/')}
+                                            {mov.date.split('-').reverse().join('/')} • {new Date(mov.created_at).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false })}
                                         </p>
                                     </div>
                                 </div>

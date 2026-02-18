@@ -31,6 +31,28 @@ export const useMovements = () => {
         }
     };
 
+    const updateMovement = async (id, movement) => {
+        try {
+            const updated = await movementsService.update(id, movement);
+            setMovements(prev => prev.map(m => m.id === id ? updated : m));
+            return updated;
+        } catch (err) {
+            console.error('Error updating movement:', err);
+            throw err;
+        }
+    };
+
+    const deleteMovement = async (id) => {
+        try {
+            await movementsService.delete(id);
+            setMovements(prev => prev.map(m => m.id === id ? { ...m, _deleted: true } : m).filter(m => !m._deleted));
+            return true;
+        } catch (err) {
+            console.error('Error deleting movement:', err);
+            throw err;
+        }
+    };
+
     const confirmMovement = async (id) => {
         try {
             const updated = await movementsService.confirm(id);
@@ -48,6 +70,8 @@ export const useMovements = () => {
         error,
         fetchMovements,
         addMovement,
+        updateMovement,
+        deleteMovement,
         confirmMovement
     };
 };

@@ -37,8 +37,8 @@ const PAYMENT_METHODS = [
     'Transferencia Bancaria'
 ];
 
-const MovementModal = ({ isOpen, onClose, onSuccess }) => {
-    const { addMovement } = useMovements();
+const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) => {
+    const { addMovement, updateMovement } = useMovements();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -53,12 +53,28 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
         user_id: user?.id
     });
 
-    // Sincronizar user_id cuando el usuario esté disponible o cambie
+    // Sincronizar form cuando editamos o cuando el usuario cambia
     React.useEffect(() => {
-        if (user?.id) {
-            setFormData(prev => ({ ...prev, user_id: user.id }));
+        if (movementToEdit) {
+            setFormData({
+                ...movementToEdit,
+                amount: movementToEdit.amount.toString(),
+                user_id: movementToEdit.user_id || user?.id
+            });
+        } else {
+            setFormData({
+                type: 'GASTO',
+                amount: '',
+                category: 'Alimentación',
+                description: '',
+                payment_method: 'Efectivo',
+                date: getLocalDate(),
+                status: 'CONFIRMED',
+                total_installments: 1,
+                user_id: user?.id
+            });
         }
-    }, [user]);
+    }, [movementToEdit, user, isOpen]);
 
     if (!isOpen) return null;
 
@@ -71,12 +87,16 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
             user_id: user?.id || formData.user_id
         };
         try {
-            await addMovement(movementData);
+            if (movementToEdit) {
+                await updateMovement(movementToEdit.id, movementData);
+            } else {
+                await addMovement(movementData);
+            }
 
             Swal.fire({
                 icon: 'success',
-                title: '¡Registrado!',
-                text: 'El movimiento se guardó correctamente.',
+                title: movementToEdit ? '¡Actualizado!' : '¡Registrado!',
+                text: movementToEdit ? 'Los cambios se guardaron correctamente.' : 'El movimiento se guardó correctamente.',
                 timer: 1500,
                 showConfirmButton: false,
                 background: '#ffffff',
@@ -116,10 +136,10 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
                 <div className="sticky top-0 z-10 p-8 border-b border-slate-100 dark:border-slate-300 flex justify-between items-center bg-white dark:bg-slate-100">
                     <div>
                         <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter leading-none">
-                            Nuevo Movimiento
+                            {movementToEdit ? 'Editar Movimiento' : 'Nuevo Movimiento'}
                         </h3>
                         <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-black tracking-[0.2rem] mt-2">
-                            Registro de Finanzas
+                            {movementToEdit ? 'Actualizar Registro' : 'Registro de Finanzas'}
                         </p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-colors">
@@ -299,7 +319,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
                                 </>
                             ) : (
                                 <>
-                                    <span>Guardar Movimiento</span>
+                                    <span>{movementToEdit ? 'Guardar Cambios' : 'Guardar Movimiento'}</span>
                                     <Plus className="w-6 h-6" />
                                 </>
                             )}

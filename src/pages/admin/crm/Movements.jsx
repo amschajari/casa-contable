@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useMovements } from '../../../hooks/useMovements';
 import SearchBar from '../../../components/SearchBar';
-import { History, TrendingUp, TrendingDown, Wallet, Calendar, Tag, AlertCircle, Clock, CheckCircle } from 'lucide-react';
+import { History, TrendingUp, TrendingDown, Wallet, Calendar, Tag, AlertCircle, Clock, CheckCircle, Pencil, Trash2 } from 'lucide-react';
+import MovementModal from '../../../components/MovementModal';
+import Swal from 'sweetalert2';
 
 const Movements = () => {
-    const { movements, loading, fetchMovements, confirmMovement } = useMovements();
+    const { movements, loading, fetchMovements, confirmMovement, deleteMovement } = useMovements();
     const [searchTerm, setSearchTerm] = useState('');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [movementToEdit, setMovementToEdit] = useState(null);
 
     useEffect(() => {
         fetchMovements();
@@ -19,10 +23,20 @@ const Movements = () => {
         }).format(amount);
     };
 
-    const formatDate = (dateString) => {
+    const formatDate = (dateString, showTime = false, createdAt = null) => {
         if (!dateString) return '';
         const [year, month, day] = dateString.split('-');
-        return `${day}/${month}/${year}`;
+        let result = `${day}/${month}/${year}`;
+
+        if (showTime && createdAt) {
+            const time = new Date(createdAt).toLocaleTimeString('es-AR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            result += ` • ${time}`;
+        }
+        return result;
     };
 
     const getTypeConfig = (type) => {
@@ -107,6 +121,7 @@ const Movements = () => {
                                     <th className="px-8 py-5 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.2rem] border-b border-slate-200 dark:border-slate-300">Tipo</th>
                                     <th className="px-8 py-5 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.2rem] text-right border-b border-slate-200 dark:border-slate-300">Monto</th>
                                     <th className="px-8 py-5 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.2rem] border-b border-slate-200 dark:border-slate-300">Pago</th>
+                                    <th className="px-8 py-5 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.2rem] text-center border-b border-slate-200 dark:border-slate-300">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-white/5">
@@ -123,11 +138,11 @@ const Movements = () => {
                                             <tr key={mov.id} className={`group transition-all ${mov.status === 'PENDING' ? 'bg-amber-50/30 dark:bg-amber-500/5' : 'hover:bg-slate-50 dark:hover:bg-white/5'}`}>
                                                 <td className="px-8 py-5">
                                                     <p className="text-slate-500 dark:text-slate-600 font-bold whitespace-nowrap tabular-nums flex items-center gap-3 text-xs">
-                                                        <Calendar className="w-4 h-4 opacity-70" /> {formatDate(mov.date)}
+                                                        <Calendar className="w-4 h-4 opacity-70" /> {formatDate(mov.date, true, mov.created_at)}
                                                     </p>
                                                 </td>
                                                 <td className="px-8 py-5">
-                                                        <div className="flex flex-col gap-1">
+                                                    <div className="flex flex-col gap-1">
                                                         <div className="flex items-center gap-3">
                                                             <p className="font-black text-slate-800 text-xl tracking-tighter italic leading-none">{mov.description || 'Sin descripción'}</p>
                                                             <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026'
@@ -165,19 +180,47 @@ const Movements = () => {
                                                     </p>
                                                 </td>
                                                 <td className="px-8 py-5">
-                                                    <div className="flex items-center gap-4">
-                                                        <p className="text-[10px] text-slate-500 dark:text-slate-600 font-black uppercase tracking-[0.15rem] italic whitespace-nowrap">{mov.payment_method}</p>
-                                                        {mov.status === 'PENDING' && (
-                                                            <button
-                                                                onClick={async () => {
-                                                                    await confirmMovement(mov.id);
-                                                                    window.location.reload();
-                                                                }}
-                                                                className="p-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
-                                                            >
-                                                                <CheckCircle className="w-4 h-4" />
-                                                            </button>
-                                                        )}
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                setMovementToEdit(mov);
+                                                                setIsEditModalOpen(true);
+                                                            }}
+                                                            className="p-2.5 bg-slate-100 hover:bg-brand hover:text-white dark:bg-slate-200 text-slate-400 dark:text-slate-500 rounded-xl transition-all active:scale-95 group"
+                                                            title="Editar"
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={async () => {
+                                                                const result = await Swal.fire({
+                                                                    title: '¿Eliminar registro?',
+                                                                    text: "Esta acción no se puede deshacer.",
+                                                                    icon: 'warning',
+                                                                    showCancelButton: true,
+                                                                    confirmButtonColor: '#ef4444',
+                                                                    cancelButtonColor: '#94a3b8',
+                                                                    confirmButtonText: 'Sí, eliminar',
+                                                                    cancelButtonText: 'Cancelar',
+                                                                    background: '#ffffff',
+                                                                    color: '#1e293b'
+                                                                });
+
+                                                                if (result.isConfirmed) {
+                                                                    await deleteMovement(mov.id);
+                                                                    Swal.fire({
+                                                                        title: 'Eliminado',
+                                                                        icon: 'success',
+                                                                        timer: 1000,
+                                                                        showConfirmButton: false
+                                                                    });
+                                                                }
+                                                            }}
+                                                            className="p-2.5 bg-slate-100 hover:bg-rose-500 hover:text-white dark:bg-slate-200 text-slate-400 dark:text-slate-500 rounded-xl transition-all active:scale-95 group"
+                                                            title="Eliminar"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -214,7 +257,7 @@ const Movements = () => {
                                                 )}
                                             </div>
                                             <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1 italic flex items-center gap-2">
-                                                <Calendar className="w-3 h-3 opacity-70" /> {formatDate(mov.date)}
+                                                <Calendar className="w-3 h-3 opacity-70" /> {formatDate(mov.date, true, mov.created_at)}
                                             </p>
                                         </div>
                                         <div className="flex flex-col items-end gap-2">
@@ -234,20 +277,43 @@ const Movements = () => {
                                         </p>
                                     </div>
                                     <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-white/5">
-                                        <span className="text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">{mov.category}</span>
-                                        {mov.status === 'PENDING' ? (
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setMovementToEdit(mov);
+                                                    setIsEditModalOpen(true);
+                                                }}
+                                                className="p-3 bg-slate-50 text-slate-400 rounded-xl active:scale-95"
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
                                             <button
                                                 onClick={async () => {
-                                                    await confirmMovement(mov.id);
-                                                    window.location.reload();
+                                                    const result = await Swal.fire({
+                                                        title: '¿Eliminar?',
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#ef4444',
+                                                        confirmButtonText: 'Eliminar'
+                                                    });
+                                                    if (result.isConfirmed) await deleteMovement(mov.id);
                                                 }}
-                                                className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md shadow-emerald-500/20"
+                                                className="p-3 bg-slate-50 text-slate-400 rounded-xl active:scale-95"
                                             >
-                                                <CheckCircle className="w-4 h-4" /> Confirmar
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
-                                        ) : (
-                                            <span className="text-[10px] text-slate-500 font-bold italic bg-slate-100 dark:bg-slate-200 px-3 py-1 rounded-lg tabular-nums">{mov.payment_method}</span>
-                                        )}
+                                            {mov.status === 'PENDING' && (
+                                                <button
+                                                    onClick={async () => {
+                                                        await confirmMovement(mov.id);
+                                                    }}
+                                                    className="p-3 bg-emerald-500 text-white rounded-xl active:scale-95"
+                                                >
+                                                    <CheckCircle className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                        </div>
+                                        <span className="text-[10px] text-slate-500 font-bold italic bg-slate-100 dark:bg-slate-200 px-3 py-1 rounded-lg tabular-nums">{mov.payment_method}</span>
                                     </div>
                                 </div>
                             );
@@ -255,6 +321,16 @@ const Movements = () => {
                     </div>
                 </div>
             </div>
+
+            <MovementModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setMovementToEdit(null);
+                }}
+                onSuccess={() => fetchMovements()}
+                movementToEdit={movementToEdit}
+            />
         </div>
     );
 };

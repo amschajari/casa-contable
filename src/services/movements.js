@@ -48,6 +48,17 @@ export const movementsService = {
         return data[0];
     },
 
+    async update(id, movement) {
+        const { data, error } = await supabase
+            .from('movements')
+            .update(movement)
+            .eq('id', id)
+            .select();
+
+        if (error) throw error;
+        return data[0];
+    },
+
     async confirm(id) {
         const { data, error } = await supabase
             .from('movements')
