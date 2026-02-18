@@ -4,6 +4,13 @@ import { useMovements } from '../hooks/useMovements';
 import { useAuth } from '../hooks/useAuth';
 import Swal from 'sweetalert2';
 
+const getLocalDate = () => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const localDate = new Date(now.getTime() - (offset * 60 * 1000));
+    return localDate.toISOString().split('T')[0];
+};
+
 const CATEGORIES = [
     { label: '🛒 Alimentación / Super', value: 'Alimentación' },
     { label: '💡 Servicios (Luz, Gas, etc)', value: 'Servicios' },
@@ -40,22 +47,31 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
         category: 'Alimentación',
         description: '',
         payment_method: 'Efectivo',
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalDate(),
         status: 'CONFIRMED',
         total_installments: 1,
         user_id: user?.id
     });
+
+    // Sincronizar user_id cuando el usuario esté disponible o cambie
+    React.useEffect(() => {
+        if (user?.id) {
+            setFormData(prev => ({ ...prev, user_id: user.id }));
+        }
+    }, [user]);
 
     if (!isOpen) return null;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        const movementData = {
+            ...formData,
+            amount: parseFloat(formData.amount),
+            user_id: user?.id || formData.user_id
+        };
         try {
-            await addMovement({
-                ...formData,
-                amount: parseFloat(formData.amount)
-            });
+            await addMovement(movementData);
 
             Swal.fire({
                 icon: 'success',
@@ -76,7 +92,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess }) => {
                 category: 'Alimentación',
                 description: '',
                 payment_method: 'Efectivo',
-                date: new Date().toISOString().split('T')[0],
+                date: getLocalDate(),
                 status: 'CONFIRMED',
                 total_installments: 1,
                 user_id: user?.id

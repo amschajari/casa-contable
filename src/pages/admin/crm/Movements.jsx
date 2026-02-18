@@ -127,14 +127,14 @@ const Movements = () => {
                                                     </p>
                                                 </td>
                                                 <td className="px-8 py-5">
-                                                    <div className="flex flex-col gap-1">
+                                                        <div className="flex flex-col gap-1">
                                                         <div className="flex items-center gap-3">
                                                             <p className="font-black text-slate-800 text-xl tracking-tighter italic leading-none">{mov.description || 'Sin descripción'}</p>
-                                                            <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '394e77da-5211-4475-8025-456637841c8d'
+                                                            <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026'
                                                                 ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
                                                                 : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
                                                                 }`}>
-                                                                {mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'S' : 'A'}
+                                                                {mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026' ? 'S' : 'A'}
                                                             </div>
                                                             {mov.total_installments > 1 && (
                                                                 <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-0.5 rounded-full">
@@ -201,11 +201,11 @@ const Movements = () => {
                                         <div>
                                             <div className="flex items-center gap-3">
                                                 <h3 className="font-black text-slate-900 text-xl italic tracking-tighter leading-tight">{mov.description || 'Sin descripción'}</h3>
-                                                <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '394e77da-5211-4475-8025-456637841c8d'
+                                                <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026'
                                                     ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
                                                     : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
                                                     }`}>
-                                                    {mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'S' : 'A'}
+                                                    {mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026' ? 'S' : 'A'}
                                                 </div>
                                                 {mov.total_installments > 1 && (
                                                     <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-tighter">

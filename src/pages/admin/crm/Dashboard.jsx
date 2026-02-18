@@ -10,19 +10,26 @@ const useMonthlySummary = ({ selectedYear }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Función auxiliar para obtener año y mes de fecha YYYY-MM-DD sin problemas de timezone
+    const getDateParts = (dateString) => {
+        if (!dateString) return { year: null, month: null };
+        const [year, month] = dateString.split('-').map(Number);
+        return { year, month: month - 1 }; // month 0-indexed
+    };
+
     useEffect(() => {
         const fetchMonthlyData = async () => {
             try {
                 const data = await movementsService.getAll();
 
-                // Filtrar por año y agrupar por mes
-                const filtered = data.filter(m => new Date(m.date).getFullYear() === selectedYear);
+                // Filtrar por año y agrupar por mes (sin problemas de timezone)
+                const filtered = data.filter(m => getDateParts(m.date).year === selectedYear);
 
                 const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
                 const monthlyTotals = Array(12).fill(0);
 
                 filtered.forEach(m => {
-                    const month = new Date(m.date).getMonth();
+                    const { month } = getDateParts(m.date);
                     if (m.type === 'INGRESO') monthlyTotals[month] += Number(m.amount);
                     if (m.type === 'GASTO') monthlyTotals[month] -= Number(m.amount);
                 });
@@ -205,11 +212,11 @@ const RecentMovements = () => {
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <p className="font-black text-slate-800 italic text-lg tracking-tight leading-none">{mov.description || 'Sin descripción'}</p>
-                                            <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '394e77da-5211-4475-8025-456637841c8d'
+                                            <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026'
                                                 ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
                                                 : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
                                                 }`}>
-                                                {mov.user_id === '394e77da-5211-4475-8025-456637841c8d' ? 'S' : 'A'}
+                                                {mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026' ? 'S' : 'A'}
                                             </div>
                                             {mov.total_installments > 1 && (
                                                 <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-tighter">
@@ -340,8 +347,8 @@ const PersonalSummary = () => {
         const fetchStats = async () => {
             try {
                 const data = await movementsService.getAll();
-                const silviId = '394e77da-5211-4475-8025-456637841c8d';
-                const aleId = 'c0cb77d0-1017-4863-883a-18e3a290a1f9'; // Assuming this is ALE's ID based on common patterns, but better to check
+                const silviId = '18d11914-7b1a-4ff0-a121-a5f0fd668026';
+                const aleId = 'e8e1a9ee-8a3d-4e8a-b12f-aed264d54d7b';
 
                 const newStats = data.reduce((acc, m) => {
                     if (m.status !== 'CONFIRMED') return acc;

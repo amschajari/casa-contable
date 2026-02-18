@@ -10,6 +10,14 @@ Crear una herramienta de control financiero personal con **soporte multi-usuario
 - **Alcance**: 2 usuarios iniciales (expandible).
 - **Rastreo**: Cada registro (movimiento) debe llevar el `user_id` de la sesión activa.
 
+### IDs de Usuarios Registrados
+| Usuario | user_id (UUID) |
+|---------|----------------|
+| Silvina | `18d11914-7b1a-4ff0-a121-a5f0fd668026` |
+| ALE | `e8e1a9ee-8a3d-4e8a-b12f-aed264d54d7b` |
+
+> ⚠️ **Importante**: Estos IDs se usan en el frontend para mostrar las iniciales "S" y "A" en los movimientos. Si se agregan nuevos usuarios, actualizar las constantes en `Dashboard.jsx` y `Movements.jsx`.
+
 ## 🏗️ Arquitectura (Basada en Clicando)
 - **UI Pattern**: Clonar la estética de `Payments.jsx` y `Dashboard.jsx` de Clicando.
 - **Backend**: Supabase con RLS habilitado.
@@ -52,6 +60,21 @@ El usuario desea que el sistema funcione como una **PWA** para que los 2 usuario
 - Instalar `vite-plugin-pwa`.
 - Configurar el `manifest.json` con iconos y colores temáticos.
 - Asegurar que la UI sea 100% responsiva (Mobile-First).
+
+## 🐛 Correcciones Conocidas (Feb 2026)
+
+### Error de Timezone (Desfase de Fechas)
+**Problema**: Los gastos se visualizaban con un día de retraso debido al uso de `new Date(dateString)` que interpreta fechas UTC sin hora como medianoche UTC, causando desfase en zonas horarias como Argentina (UTC-3).
+
+**Solución implementada**:
+- En `MovementModal.jsx`: Función `getLocalDate()` que ajusta el offset de minutos antes de convertir a ISO.
+- En `Movements.jsx`: Función `formatDate()` que usa `.split('-')` para evitar conversiones de timezone.
+- En `Dashboard.jsx`: Función `getDateParts()` que extrae año/mes directamente del string YYYY-MM-DD.
+
+### Error de Identidad de Usuario
+**Problema**: Los movimientos de Silvi aparecían con "A" en lugar de "S" porque el ID hardcodeado era incorrecto.
+
+**Solución**: Actualizar los IDs en `Dashboard.jsx` y `Movements.jsx` con los valores correctos de la tabla `auth.users`.
 
 ## 🚀 Pasos de Inicialización
 1. Copiar carpeta `.agent` para mantener las habilidades de Antigravity.
