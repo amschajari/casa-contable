@@ -5,7 +5,8 @@ export const movementsService = {
         const { data, error } = await supabase
             .from('movements')
             .select('*')
-            .order('date', { ascending: false });
+            .order('date', { ascending: false })
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
         return data;
