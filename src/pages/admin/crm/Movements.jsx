@@ -4,6 +4,8 @@ import SearchBar from '../../../components/SearchBar';
 import { History, TrendingUp, TrendingDown, Wallet, Calendar, Tag, AlertCircle, Clock, CheckCircle, Pencil, Trash2 } from 'lucide-react';
 import MovementModal from '../../../components/MovementModal';
 import Swal from 'sweetalert2';
+import { formatCurrency, formatDate } from '../../../utils/format';
+import { USER_IDS, getUserInitial } from '../../../config/constants';
 
 const Movements = () => {
     const { movements, loading, fetchMovements, confirmMovement, deleteMovement } = useMovements();
@@ -14,30 +16,6 @@ const Movements = () => {
     useEffect(() => {
         fetchMovements();
     }, [fetchMovements]);
-
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('es-AR', {
-            style: 'currency',
-            currency: 'ARS',
-            minimumFractionDigits: 0
-        }).format(amount);
-    };
-
-    const formatDate = (dateString, showTime = false, createdAt = null) => {
-        if (!dateString) return '';
-        const [year, month, day] = dateString.split('-');
-        let result = `${day}/${month}/${year}`;
-
-        if (showTime && createdAt) {
-            const time = new Date(createdAt).toLocaleTimeString('es-AR', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
-            result += ` • ${time}`;
-        }
-        return result;
-    };
 
     const getTypeConfig = (type) => {
         switch (type) {
@@ -145,11 +123,11 @@ const Movements = () => {
                                                     <div className="flex flex-col gap-1">
                                                         <div className="flex items-center gap-3">
                                                             <p className="font-black text-slate-800 text-xl tracking-tighter italic leading-none">{mov.description || 'Sin descripción'}</p>
-                                                            <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026'
+                                                            <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === USER_IDS.SILVI
                                                                 ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
                                                                 : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
                                                                 }`}>
-                                                                {mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026' ? 'S' : 'A'}
+                                                                {getUserInitial(mov.user_id)}
                                                             </div>
                                                             {mov.total_installments > 1 && (
                                                                 <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-0.5 rounded-full">
@@ -241,11 +219,11 @@ const Movements = () => {
                                         <div>
                                             <div className="flex items-center gap-3">
                                                 <h3 className="font-black text-slate-900 text-xl italic tracking-tighter leading-tight">{mov.description || 'Sin descripción'}</h3>
-                                                <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026'
+                                                <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === USER_IDS.SILVI
                                                     ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
                                                     : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
                                                     }`}>
-                                                    {mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026' ? 'S' : 'A'}
+                                                    {getUserInitial(mov.user_id)}
                                                 </div>
                                                 {mov.total_installments > 1 && (
                                                     <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-tighter">

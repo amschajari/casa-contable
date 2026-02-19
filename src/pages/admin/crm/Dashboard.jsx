@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { movementsService } from '../../../services/movements';
 import { Link } from 'react-router-dom';
 import BarChartView from '../../../components/BarChartView';
-import { Wallet, TrendingUp, TrendingDown, Clock, ChevronRight, AlertCircle, Info } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, Clock, ChevronRight, AlertCircle, Info, CheckCircle } from 'lucide-react';
 
 // Hook para obtener resumen por mes para el gráfico
 const useMonthlySummary = ({ selectedYear }) => {
@@ -243,8 +243,8 @@ const RecentMovements = () => {
                                     </div>
                                     {mov.status === 'PENDING' && (
                                         <button
-                                            onClick={async () => {
-                                                await confirmMovement(mov.id);
+                                        onClick={async () => {
+                                                await movementsService.confirm(mov.id);
                                                 window.location.reload();
                                             }}
                                             className="p-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95"

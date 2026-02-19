@@ -4,27 +4,19 @@ import { useAuth } from '../hooks/useAuth';
 import { Sun, Moon, LogOut, Home, History, Plus } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import MovementModal from './MovementModal';
+import { getUserDisplayName } from '../config/constants';
 
 const AdminLayout = ({ children }) => {
     const { isDarkMode, toggleTheme } = useTheme();
     const { logout, user } = useAuth();
     const location = useLocation();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const isActive = (path) => location.pathname === path;
 
     const handleSuccess = () => {
-        // Refresh page only if on dashboard or movements to update stats
-        if (location.pathname.includes('dashboard') || location.pathname.includes('movements')) {
-            window.location.reload();
-        }
-    };
-
-    const getUserDisplayName = () => {
-        const email = user?.email;
-        if (email === 'a.m.saposnik@gmail.com') return 'ALE';
-        if (email === 'silvinaeme@gmail.com') return 'SILVI';
-        return email?.split('@')[0].toUpperCase();
+        setRefreshKey(prev => prev + 1);
     };
 
     return (
@@ -79,7 +71,7 @@ const AdminLayout = ({ children }) => {
 
                         <div className="hidden md:flex flex-col items-end mr-2">
                             <span className="text-[10px] font-black text-brand dark:text-brand-dark uppercase tracking-widest leading-none">Usuario</span>
-                            <span className={`text-sm font-black italic tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{getUserDisplayName()}</span>
+                            <span className={`text-sm font-black italic tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{getUserDisplayName(user?.email)}</span>
                         </div>
 
                         <div className="flex flex-col items-center">
@@ -90,7 +82,7 @@ const AdminLayout = ({ children }) => {
                             >
                                 <LogOut className="w-5 h-5" />
                             </button>
-                            <span className="text-[9px] font-black text-slate-400 md:hidden uppercase tracking-wider mt-1">{getUserDisplayName()}</span>
+                            <span className="text-[9px] font-black text-slate-400 md:hidden uppercase tracking-wider mt-1">{getUserDisplayName(user?.email)}</span>
                         </div>
                     </div>
                 </div>

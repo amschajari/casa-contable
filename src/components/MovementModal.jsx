@@ -3,39 +3,8 @@ import { X, Plus, Calendar, DollarSign, Tag, CreditCard, Type, Loader2, Clock, C
 import { useMovements } from '../hooks/useMovements';
 import { useAuth } from '../hooks/useAuth';
 import Swal from 'sweetalert2';
-
-const getLocalDate = () => {
-    const now = new Date();
-    const offset = now.getTimezoneOffset();
-    const localDate = new Date(now.getTime() - (offset * 60 * 1000));
-    return localDate.toISOString().split('T')[0];
-};
-
-const CATEGORIES = [
-    { label: '🛒 Alimentación / Super', value: 'Alimentación' },
-    { label: '💡 Servicios (Luz, Gas, etc)', value: 'Servicios' },
-    { label: '⛽ Transporte / Nafta', value: 'Transporte' },
-    { label: '💊 Salud / Farmacia', value: 'Salud' },
-    { label: '🎓 Educación', value: 'Educación' },
-    { label: '🎬 Entretenimiento', value: 'Entretenimiento' },
-    { label: '🏠 Hogar', value: 'Hogar' },
-    { label: '👕 Vestimenta', value: 'Vestimenta' },
-    { label: '💰 Sueldo', value: 'Sueldo' },
-    { label: '📄 Honorarios', value: 'Honorarios' },
-    { label: '🤝 Venta', value: 'Venta' },
-    { label: '🏦 Préstamo', value: 'Préstamo' },
-    { label: '📈 Inversión', value: 'Inversión' },
-    { label: '🎁 Regalo', value: 'Regalo' },
-    { label: '✨ Otros', value: 'Otros' }
-];
-
-const PAYMENT_METHODS = [
-    'Efectivo',
-    'Tarjeta Débito',
-    'Tarjeta Crédito',
-    'Mercado Pago',
-    'Transferencia Bancaria'
-];
+import { getLocalDate } from '../utils/format';
+import { CATEGORIES, PAYMENT_METHODS, INSTALLMENT_OPTIONS } from '../config/constants';
 
 const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) => {
     const { addMovement, updateMovement } = useMovements();
@@ -299,7 +268,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                         value={formData.total_installments}
                                         onChange={(e) => setFormData({ ...formData, total_installments: parseInt(e.target.value) })}
                                     >
-                                        {[1, 2, 3, 6, 9, 12, 18, 24].map(n => (
+                                        {INSTALLMENT_OPTIONS.map(n => (
                                             <option key={n} value={n}>{n === 1 ? 'Sin cuotas (Pago único)' : `${n} Cuotas mensuales`}</option>
                                         ))}
                                     </select>
