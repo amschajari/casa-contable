@@ -200,26 +200,32 @@ const RecentMovements = () => {
                                 ? 'border-dashed border-amber-300 dark:border-amber-400/50 opacity-80'
                                 : 'border-transparent hover:border-brand/30 dark:hover:border-brand/40'
                                 }`}>
-                                <div className="flex items-center gap-5">
-                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black ${mov.type === 'INGRESO' ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
-                                        mov.type === 'GASTO' ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400' :
-                                            mov.type === 'EMERGENCIA' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' :
-                                                mov.type === 'AHORRO' ? 'bg-brand-100 dark:bg-brand-200 text-brand dark:text-brand-dark' :
-                                                    'bg-slate-100 dark:bg-slate-200 text-slate-600 dark:text-slate-700'
-                                        } shadow-inner`}>
-                                        {mov.status === 'PENDING' ? <Clock className="w-5 h-5 text-amber-500" /> : (mov.status === 'CONFIRMED' && mov.type === 'INGRESO' ? '+' : mov.status === 'CONFIRMED' && mov.type === 'GASTO' ? '-' : (mov.type === 'EMERGENCIA' ? '!' : '*'))}
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <p className="font-black text-slate-800 italic text-lg tracking-tight leading-none">{mov.description || 'Sin descripción'}</p>
-                                            <div className={`w-7 h-7 flex items-center justify-center rounded-full border text-xs font-black transition-all ${mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026'
+                                <div className="flex items-center gap-3 min-w-0 flex-1">
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                            <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter shrink-0 ${mov.status === 'PENDING'
+                                                ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-dashed border-amber-300'
+                                                : mov.type === 'INGRESO'
+                                                    ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                                    : mov.type === 'GASTO'
+                                                        ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                                                        : mov.type === 'EMERGENCIA'
+                                                            ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                                                            : mov.type === 'AHORRO'
+                                                                ? 'bg-brand-100 dark:bg-brand-200 text-brand dark:text-brand-dark'
+                                                                : 'bg-slate-100 dark:bg-slate-200 text-slate-600 dark:text-slate-700'
+                                                }`}>
+                                                {mov.status === 'PENDING' ? 'PENDIENTE' : mov.type}
+                                            </span>
+                                            <p className="font-black text-slate-800 italic text-base md:text-lg tracking-tight leading-none truncate">{mov.description || 'Sin descripción'}</p>
+                                            <div className={`w-6 h-6 flex items-center justify-center rounded-full border text-[10px] font-black transition-all shrink-0 ${mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026'
                                                 ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
                                                 : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
                                                 }`}>
                                                 {mov.user_id === '18d11914-7b1a-4ff0-a121-a5f0fd668026' ? 'S' : 'A'}
                                             </div>
                                             {mov.total_installments > 1 && (
-                                                <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-tighter">
+                                                <span className="bg-brand-100/50 dark:bg-brand-200 text-brand dark:text-brand-dark text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-tighter shrink-0">
                                                     {mov.installment_number}/{mov.total_installments}
                                                 </span>
                                             )}
@@ -231,19 +237,19 @@ const RecentMovements = () => {
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <div className="text-right">
-                                        <p className={`text-xl font-black tracking-tighter italic ${mov.type === 'INGRESO' ? 'text-emerald-600 dark:text-emerald-400' :
+                                        <p className={`text-lg md:text-xl font-black tracking-tighter italic ${mov.type === 'INGRESO' ? 'text-emerald-600 dark:text-emerald-400' :
                                             mov.type === 'GASTO' ? 'text-rose-600 dark:text-rose-400' :
                                                 mov.type === 'EMERGENCIA' ? 'text-amber-600 dark:text-amber-400' :
                                                     mov.type === 'AHORRO' ? 'text-brand' :
                                                         'text-slate-600 dark:text-slate-400'
                                             }`}>
-                                            {formatCurrency(mov.amount)}
+                                            {mov.type === 'GASTO' ? '-' : ''}{formatCurrency(mov.amount)}
                                         </p>
                                         <p className="text-[10px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.1rem] opacity-60">{mov.category}</p>
                                     </div>
                                     {mov.status === 'PENDING' && (
                                         <button
-                                        onClick={async () => {
+                                            onClick={async () => {
                                                 await movementsService.confirm(mov.id);
                                                 window.location.reload();
                                             }}
