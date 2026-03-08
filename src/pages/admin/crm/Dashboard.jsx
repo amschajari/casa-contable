@@ -3,6 +3,7 @@ import { movementsService } from '../../../services/movements';
 import { Link } from 'react-router-dom';
 import BarChartView from '../../../components/BarChartView';
 import { Wallet, TrendingUp, TrendingDown, Clock, ChevronRight, AlertCircle, Info, CheckCircle } from 'lucide-react';
+import { USER_IDS, getUserInitial } from '../../../config/constants';
 
 // Hook para obtener resumen por mes para el gráfico
 const useMonthlySummary = ({ selectedYear }) => {
@@ -57,15 +58,37 @@ const useMonthlySummary = ({ selectedYear }) => {
     return { monthlyData, loading, error };
 };
 
-const SummaryCards = () => {
-    const [summary, setSummary] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0 });
+const SummaryCards = ({ selectedYear, selectedMonth }) => {
+    const [summary, setSummary] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0, totalEmergency: 0, totalSavings: 0 });
     const [loading, setLoading] = useState(true);
+
+    const getDateParts = (dateString) => {
+        if (!dateString) return { year: null, month: null };
+        const [year, month] = dateString.split('-').map(Number);
+        return { year, month: month - 1 };
+    };
 
     useEffect(() => {
         const fetchSummary = async () => {
+            setLoading(true);
             try {
-                const data = await movementsService.getSummary();
-                setSummary(data);
+                const data = await movementsService.getAll();
+
+                const filtered = data.filter(m => {
+                    const { year, month } = getDateParts(m.date);
+                    return year === selectedYear && month === selectedMonth && m.status === 'CONFIRMED';
+                });
+
+                const newSummary = filtered.reduce((acc, mov) => {
+                    if (mov.type === 'INGRESO') acc.totalIncome += Number(mov.amount);
+                    if (mov.type === 'GASTO') acc.totalExpenses += Number(mov.amount);
+                    if (mov.type === 'EMERGENCIA') acc.totalEmergency += Number(mov.amount);
+                    if (mov.type === 'AHORRO') acc.totalSavings += Number(mov.amount);
+                    return acc;
+                }, { totalIncome: 0, totalExpenses: 0, totalEmergency: 0, totalSavings: 0 });
+
+                newSummary.balance = newSummary.totalIncome - (newSummary.totalExpenses + newSummary.totalEmergency + newSummary.totalSavings);
+                setSummary(newSummary);
             } catch (err) {
                 console.error('Error fetching summary:', err);
             } finally {
@@ -73,7 +96,7 @@ const SummaryCards = () => {
             }
         };
         fetchSummary();
-    }, []);
+    }, [selectedYear, selectedMonth]);
 
     const cards = [
         {
@@ -270,7 +293,13 @@ const RecentMovements = () => {
 
 const Dashboard = () => {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // 0-indexed
     const { monthlyData, loading: chartLoading } = useMonthlySummary({ selectedYear });
+
+    const months = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col flex-1 w-full bg-transparent">
@@ -283,21 +312,35 @@ const Dashboard = () => {
                     <div className="h-2 w-24 bg-brand mt-2 rounded-full"></div>
                 </div>
 
-                <div className="flex items-center gap-3 bg-white dark:bg-slate-100 p-2 px-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-300 transition-colors">
-                    <Clock className="w-4 h-4 text-brand" />
-                    <select
-                        value={selectedYear}
-                        onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="text-xs font-black uppercase text-slate-900 focus:outline-none bg-transparent cursor-pointer"
-                    >
-                        {[2024, 2025, 2026].map(year => (
-                            <option key={year} value={year} className="dark:bg-white">{year}</option>
-                        ))}
-                    </select>
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-3 bg-white dark:bg-slate-100 p-2 px-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-300 transition-colors">
+                        <Clock className="w-4 h-4 text-brand" />
+                        <select
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                            className="text-xs font-black uppercase text-slate-900 focus:outline-none bg-transparent cursor-pointer"
+                        >
+                            {months.map((month, index) => (
+                                <option key={index} value={index} className="dark:bg-white">{month}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex items-center gap-3 bg-white dark:bg-slate-100 p-2 px-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-300 transition-colors">
+                        <select
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(Number(e.target.value))}
+                            className="text-xs font-black uppercase text-slate-900 focus:outline-none bg-transparent cursor-pointer"
+                        >
+                            {[2024, 2025, 2026].map(year => (
+                                <option key={year} value={year} className="dark:bg-white">{year}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <SummaryCards />
+            <SummaryCards selectedYear={selectedYear} selectedMonth={selectedMonth} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
@@ -306,6 +349,7 @@ const Dashboard = () => {
                     ) : (
                         <BarChartView monthlyData={monthlyData} />
                     )}
+                    <MonthlyBreakdown selectedYear={selectedYear} selectedMonth={selectedMonth} />
                     <RecentMovements />
                 </div>
 
@@ -335,29 +379,36 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <PersonalSummary />
+                    <PersonalSummary selectedYear={selectedYear} selectedMonth={selectedMonth} />
                 </div>
             </div>
         </div>
     );
 };
 
-const PersonalSummary = () => {
+const PersonalSummary = ({ selectedYear, selectedMonth }) => {
     const [stats, setStats] = useState({
         ale: { income: 0, expenses: 0 },
         silvi: { income: 0, expenses: 0 }
     });
     const [loading, setLoading] = useState(true);
 
+    const getDateParts = (dateString) => {
+        if (!dateString) return { year: null, month: null };
+        const [year, month] = dateString.split('-').map(Number);
+        return { year, month: month - 1 };
+    };
+
     useEffect(() => {
         const fetchStats = async () => {
+            setLoading(true);
             try {
                 const data = await movementsService.getAll();
-                const silviId = '18d11914-7b1a-4ff0-a121-a5f0fd668026';
-                const aleId = 'e8e1a9ee-8a3d-4e8a-b12f-aed264d54d7b';
+                const silviId = USER_IDS.SILVI;
 
                 const newStats = data.reduce((acc, m) => {
-                    if (m.status !== 'CONFIRMED') return acc;
+                    const { year, month } = getDateParts(m.date);
+                    if (m.status !== 'CONFIRMED' || year !== selectedYear || month !== selectedMonth) return acc;
 
                     const isSilvi = m.user_id === silviId;
                     const target = isSilvi ? acc.silvi : acc.ale;
@@ -379,7 +430,7 @@ const PersonalSummary = () => {
             }
         };
         fetchStats();
-    }, []);
+    }, [selectedYear, selectedMonth]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('es-AR', {
@@ -437,6 +488,98 @@ const PersonalSummary = () => {
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Salidas</p>
                         <p className="text-xl font-black text-rose-600 italic tracking-tighter leading-none">{formatCurrency(stats.silvi.expenses)}</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const MonthlyBreakdown = ({ selectedYear, selectedMonth }) => {
+    const [movements, setMovements] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const getDateParts = (dateString) => {
+        if (!dateString) return { year: null, month: null };
+        const [year, month] = dateString.split('-').map(Number);
+        return { year, month: month - 1 };
+    };
+
+    useEffect(() => {
+        const fetchMovements = async () => {
+            setLoading(true);
+            try {
+                const data = await movementsService.getAll();
+                const filtered = data.filter(m => {
+                    const { year, month } = getDateParts(m.date);
+                    return year === selectedYear && month === selectedMonth;
+                });
+                setMovements(filtered);
+            } catch (err) {
+                console.error('Error fetching breakdown:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMovements();
+    }, [selectedYear, selectedMonth]);
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            minimumFractionDigits: 0
+        }).format(amount);
+    };
+
+    if (loading) return <div className="h-64 bg-slate-50 dark:bg-slate-900 rounded-[2.5rem] animate-pulse"></div>;
+
+    if (movements.length === 0) return (
+        <div className="premium-card p-12 text-center">
+            <Info className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-400 italic">No hay movimientos registrados para este período.</p>
+        </div>
+    );
+
+    return (
+        <div className="premium-card overflow-hidden">
+            <div className="p-8 bg-slate-50/50 dark:bg-slate-50 border-b border-slate-100 dark:border-slate-200">
+                <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter">Detalle del Mes</h3>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-black tracking-[0.2rem] mt-1">Desglose de Operaciones</p>
+            </div>
+
+            <div className="max-h-[500px] overflow-y-auto hide-scrollbar">
+                {/* Encabezado fijo simulado */}
+                <div className="sticky top-0 z-10 bg-slate-50/95 dark:bg-slate-50/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-200 px-8 py-3 flex justify-between items-center">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Detalle</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Monto</span>
+                </div>
+
+                <div className="divide-y divide-slate-100 dark:divide-slate-200">
+                    {movements.map((mov) => (
+                        <div key={mov.id} className="flex justify-between items-center p-4 px-8 hover:bg-slate-50/50 dark:hover:bg-slate-100/50 transition-colors group">
+                            <div className="flex items-center gap-4 min-w-0 flex-1">
+                                <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full border text-[10px] font-black transition-all ${mov.user_id === USER_IDS.SILVI
+                                    ? 'bg-pink-50 dark:bg-pink-500/10 text-pink-500 border-pink-200/50'
+                                    : 'bg-brand-50 dark:bg-brand-500/10 text-brand border-brand-200/50'
+                                    }`}>
+                                    {getUserInitial(mov.user_id)}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="font-bold text-slate-800 dark:text-slate-900 text-sm truncate leading-tight">
+                                        {mov.description || 'Sin descripción'}
+                                    </p>
+                                    <p className="text-[9px] text-slate-400 uppercase font-black tracking-widest truncate">
+                                        {mov.category} • {mov.date.split('-').reverse().join('/')}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="text-right ml-4 flex-shrink-0">
+                                <p className={`font-black italic tracking-tighter text-base ${mov.type === 'INGRESO' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                    {mov.type === 'INGRESO' ? '+' : '-'}{formatCurrency(mov.amount)}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
