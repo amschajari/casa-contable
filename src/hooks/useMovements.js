@@ -64,6 +64,32 @@ export const useMovements = () => {
         }
     };
 
+    const importMovements = async (movementsList) => {
+        try {
+            const created = await movementsService.bulkCreate(movementsList);
+            setMovements(prev => [...created, ...prev]);
+            return created;
+        } catch (err) {
+            console.error('Error importing movements:', err);
+            throw err;
+        }
+    };
+
+    const getLastMpDate = async () => {
+        return await movementsService.getLastMpDate();
+    };
+
+    const deleteMpMovements = async (sinceDate) => {
+        try {
+            const deleted = await movementsService.deleteByPaymentMethod('Mercado Pago', sinceDate);
+            setMovements(prev => prev.filter(m => !deleted.find(d => d.id === m.id)));
+            return deleted;
+        } catch (err) {
+            console.error('Error deleting MP movements:', err);
+            throw err;
+        }
+    };
+
     return {
         movements,
         loading,
@@ -72,6 +98,9 @@ export const useMovements = () => {
         addMovement,
         updateMovement,
         deleteMovement,
-        confirmMovement
+        confirmMovement,
+        importMovements,
+        getLastMpDate,
+        deleteMpMovements
     };
 };

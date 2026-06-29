@@ -81,6 +81,41 @@ export const movementsService = {
         return true;
     },
 
+    async getLastMpDate() {
+        const { data, error } = await supabase
+            .from('movements')
+            .select('date')
+            .eq('payment_method', 'Mercado Pago')
+            .order('date', { ascending: false })
+            .limit(1);
+
+        if (error) throw error;
+        return data?.[0]?.date || null;
+    },
+
+    async deleteByPaymentMethod(paymentMethod, sinceDate) {
+        let query = supabase
+            .from('movements')
+            .delete()
+            .eq('payment_method', paymentMethod);
+        if (sinceDate) {
+            query = query.gte('date', sinceDate);
+        }
+        const { data, error } = await query.select();
+        if (error) throw error;
+        return data;
+    },
+
+    async bulkCreate(movements) {
+        const { data, error } = await supabase
+            .from('movements')
+            .insert(movements)
+            .select();
+
+        if (error) throw error;
+        return data;
+    },
+
     async getSummary() {
         const { data, error } = await supabase
             .from('movements')
