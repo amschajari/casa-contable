@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useMovements } from '../../../hooks/useMovements';
 import SearchBar from '../../../components/SearchBar';
-import { History, TrendingUp, TrendingDown, Wallet, Calendar, Tag, AlertCircle, Clock, CheckCircle, Pencil, Trash2 } from 'lucide-react';
+import { History, TrendingUp, TrendingDown, Wallet, Calendar, Tag, AlertCircle, Clock, CheckCircle, Pencil, Trash2, Upload } from 'lucide-react';
 import MovementModal from '../../../components/MovementModal';
+import ImportMPModal from '../../../components/ImportMPModal';
 import Swal from 'sweetalert2';
 import { formatCurrency, formatDate } from '../../../utils/format';
 import { USER_IDS, getUserInitial } from '../../../config/constants';
@@ -11,6 +12,7 @@ const Movements = () => {
     const { movements, loading, fetchMovements, confirmMovement, deleteMovement } = useMovements();
     const [searchTerm, setSearchTerm] = useState('');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [movementToEdit, setMovementToEdit] = useState(null);
 
     useEffect(() => {
@@ -69,12 +71,21 @@ const Movements = () => {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-6 bg-white dark:bg-white/5 p-4 py-3 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5">
-                    <div className="text-right">
-                        <p className="text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.2rem] mb-1">Balance Sesión</p>
-                        <p className={`text-2xl font-black leading-none italic ${totals.income - totals.expenses >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                            {formatCurrency(totals.income - totals.expenses)}
-                        </p>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setIsImportModalOpen(true)}
+                        className="flex items-center gap-2 bg-brand text-white px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-brand-dark shadow-lg shadow-brand/20 transition-all active:scale-95"
+                    >
+                        <Upload className="w-4 h-4" />
+                        Importar MP
+                    </button>
+                    <div className="flex items-center gap-6 bg-white dark:bg-white/5 p-4 py-3 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5">
+                        <div className="text-right">
+                            <p className="text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.2rem] mb-1">Balance Sesión</p>
+                            <p className={`text-2xl font-black leading-none italic ${totals.income - totals.expenses >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                                {formatCurrency(totals.income - totals.expenses)}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -305,6 +316,12 @@ const Movements = () => {
                 }}
                 onSuccess={() => fetchMovements()}
                 movementToEdit={movementToEdit}
+            />
+
+            <ImportMPModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onSuccess={() => fetchMovements()}
             />
         </div>
     );
