@@ -6,24 +6,35 @@ import Swal from 'sweetalert2';
 import { getLocalDate } from '../utils/format';
 import { CATEGORIES, PAYMENT_METHODS, INSTALLMENT_OPTIONS } from '../config/constants';
 
+const DRAFT_KEY = 'movement_draft';
+
+const getDefaultForm = (userId) => ({
+    type: 'GASTO',
+    amount: '',
+    category: 'Alimentación',
+    description: '',
+    payment_method: 'Efectivo',
+    date: getLocalDate(),
+    status: 'CONFIRMED',
+    total_installments: 1,
+    user_id: userId
+});
+
 const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) => {
     const { addMovement, updateMovement } = useMovements();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        type: 'GASTO',
-        amount: '',
-        category: 'Alimentación',
-        description: '',
-        payment_method: 'Efectivo',
-        date: getLocalDate(),
-        status: 'CONFIRMED',
-        total_installments: 1,
-        user_id: user?.id
+    const [formData, setFormData] = useState(() => {
+        if (movementToEdit) return movementToEdit;
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (saved) {
+            try { return JSON.parse(saved); } catch {}
+        }
+        return getDefaultForm(user?.id);
     });
 
-    // Sincronizar form cuando editamos o cuando el usuario cambia
     React.useEffect(() => {
+        if (!isOpen) return;
         if (movementToEdit) {
             setFormData({
                 ...movementToEdit,
@@ -31,19 +42,19 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                 user_id: movementToEdit.user_id || user?.id
             });
         } else {
-            setFormData({
-                type: 'GASTO',
-                amount: '',
-                category: 'Alimentación',
-                description: '',
-                payment_method: 'Efectivo',
-                date: getLocalDate(),
-                status: 'CONFIRMED',
-                total_installments: 1,
-                user_id: user?.id
-            });
+            const saved = localStorage.getItem(DRAFT_KEY);
+            if (saved) {
+                try { setFormData(JSON.parse(saved)); return; } catch {}
+            }
+            setFormData(getDefaultForm(user?.id));
         }
     }, [movementToEdit, user, isOpen]);
+
+    React.useEffect(() => {
+        if (!movementToEdit) {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(formData));
+        }
+    }, [formData, movementToEdit]);
 
     if (!isOpen) return null;
 
@@ -72,20 +83,10 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                 color: '#1e293b'
             });
 
+            localStorage.removeItem(DRAFT_KEY);
             onSuccess?.();
             onClose();
-            // Reset form
-            setFormData({
-                type: 'GASTO',
-                amount: '',
-                category: 'Alimentación',
-                description: '',
-                payment_method: 'Efectivo',
-                date: getLocalDate(),
-                status: 'CONFIRMED',
-                total_installments: 1,
-                user_id: user?.id
-            });
+            setFormData(getDefaultForm(user?.id));
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -96,6 +97,10 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
         } finally {
             setLoading(false);
         }
+    };
+
+    const updateField = (updates) => {
+        setFormData(prev => ({ ...prev, ...updates }));
     };
 
     return (
@@ -125,7 +130,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                 <button
                                     key={type}
                                     type="button"
-                                    onClick={() => setFormData({ ...formData, type })}
+                                    onClick={() => updateField({ type })}
                                     className={`flex-1 py-2.5 px-1 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all ${formData.type === type
                                         ? 'bg-white dark:bg-brand text-brand dark:text-white shadow-sm'
                                         : 'text-slate-500 hover:text-slate-900 dark:hover:text-amber-500'
@@ -153,7 +158,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                         className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-black text-xl placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none"
                                         placeholder="0"
                                         value={formData.amount}
-                                        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                        onChange={(e) => updateField({ amount: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -170,7 +175,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                         required
                                         className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none"
                                         value={formData.date}
-                                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                        onChange={(e) => updateField({ date: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -186,7 +191,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                 <select
                                     className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none appearance-none"
                                     value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    onChange={(e) => updateField({ category: e.target.value })}
                                 >
                                     {CATEGORIES.map(cat => (
                                         <option key={cat.label} value={cat.value}>{cat.label}</option>
@@ -207,7 +212,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                     className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none"
                                     placeholder="Ejem: Supermercado Coto, Ferretería El Clavo..."
                                     value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    onChange={(e) => updateField({ description: e.target.value })}
                                 />
                             </div>
                         </div>
@@ -223,7 +228,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                     <select
                                         className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none appearance-none"
                                         value={formData.payment_method}
-                                        onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                                        onChange={(e) => updateField({ payment_method: e.target.value })}
                                     >
                                         {PAYMENT_METHODS.map(method => (
                                             <option key={method} value={method}>{method}</option>
@@ -236,7 +241,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                 <label className="text-[10px] font-black text-slate-400 dark:text-brand uppercase tracking-widest ml-1">Estado</label>
                                 <button
                                     type="button"
-                                    onClick={() => setFormData({ ...formData, status: formData.status === 'CONFIRMED' ? 'PENDING' : 'CONFIRMED' })}
+                                    onClick={() => updateField({ status: formData.status === 'CONFIRMED' ? 'PENDING' : 'CONFIRMED' })}
                                     className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl border transition-all ${formData.status === 'PENDING'
                                         ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30'
                                         : 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30'
@@ -266,7 +271,7 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
                                     <select
                                         className="block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white border border-slate-200 dark:border-slate-300 rounded-2xl text-slate-900 font-bold text-sm focus:outline-none focus:ring-4 focus:ring-brand/10 focus:border-brand transition-all outline-none appearance-none"
                                         value={formData.total_installments}
-                                        onChange={(e) => setFormData({ ...formData, total_installments: parseInt(e.target.value) })}
+                                        onChange={(e) => updateField({ total_installments: parseInt(e.target.value) })}
                                     >
                                         {INSTALLMENT_OPTIONS.map(n => (
                                             <option key={n} value={n}>{n === 1 ? 'Sin cuotas (Pago único)' : `${n} Cuotas mensuales`}</option>
