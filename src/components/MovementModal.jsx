@@ -65,6 +65,16 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
         }
     }, [formData, movementToEdit]);
 
+    // Cerrar con ESC
+    React.useEffect(() => {
+        if (!isOpen) return;
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     const handleSubmit = async (e) => {
@@ -113,7 +123,10 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex justify-center items-start overflow-y-auto p-4 md:p-8 bg-slate-950/80 backdrop-blur-sm custom-scrollbar">
+        <div
+            className="fixed inset-0 z-[200] flex justify-center items-start overflow-y-auto p-4 md:p-8 bg-slate-950/80 backdrop-blur-sm custom-scrollbar"
+            onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        >
             <div className="bg-white dark:bg-slate-200 w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-300 animate-in zoom-in-95 duration-200 my-auto">
                 {/* Header */}
                 <div className="sticky top-0 z-10 p-8 border-b border-slate-100 dark:border-slate-300 flex justify-between items-center bg-white dark:bg-slate-100">
