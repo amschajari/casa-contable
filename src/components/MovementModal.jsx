@@ -28,7 +28,11 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
         if (movementToEdit) return movementToEdit;
         const saved = localStorage.getItem(DRAFT_KEY);
         if (saved) {
-            try { return JSON.parse(saved); } catch {}
+            try {
+                const parsed = JSON.parse(saved);
+                // El borrador puede tener una fecha vieja: un movimiento nuevo siempre arranca en HOY
+                return { ...parsed, date: getLocalDate(), user_id: parsed.user_id || user?.id };
+            } catch {}
         }
         return getDefaultForm(user?.id);
     });
@@ -44,7 +48,12 @@ const MovementModal = ({ isOpen, onClose, onSuccess, movementToEdit = null }) =>
         } else {
             const saved = localStorage.getItem(DRAFT_KEY);
             if (saved) {
-                try { setFormData(JSON.parse(saved)); return; } catch {}
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Un movimiento nuevo siempre arranca en HOY, aunque haya borrador con fecha vieja
+                    setFormData({ ...parsed, date: getLocalDate(), user_id: parsed.user_id || user?.id });
+                    return;
+                } catch {}
             }
             setFormData(getDefaultForm(user?.id));
         }
