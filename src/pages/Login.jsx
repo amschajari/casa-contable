@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { LogIn, Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
@@ -79,13 +80,21 @@ const Login = () => {
                                     <Lock className="w-5 h-5 text-gray-500 group-focus-within/input:text-brand transition-colors" />
                                 </div>
                                 <input
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     required
-                                    className="block w-full pl-12 pr-4 py-4 bg-[#0f172a]/50 border border-white/5 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
+                                    className="block w-full pl-12 pr-12 py-4 bg-[#0f172a]/50 border border-white/5 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(prev => !prev)}
+                                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-brand transition-colors"
+                                >
+                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
                             </div>
                         </div>
 
